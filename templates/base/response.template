@@ -1,0 +1,61 @@
+package base
+
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+type Response struct {
+	Code string      `json:"code"`
+	Msg  string      `json:"msg"`
+	Data interface{} `json:"data"`
+}
+
+func getDefaultErrorResponse(err IError) Response {
+	var data interface{}
+
+	if err.Error() == "操作失败" {
+		data = err.GetDetail()
+	} else {
+		data = err.Error()
+	}
+
+	return Response{
+		"500", "操作失败", data,
+	}
+}
+
+func getResponseWithCode(code string, data ...interface{}) Response {
+	if code == "" {
+		code = SuccessCode
+	}
+	msg := DefaultCodeMapping.GetCodeInfo(code)
+	var r = Response{
+		Code: code,
+		Msg:  msg,
+		Data: nil,
+	}
+
+	if data == nil {
+		return r
+	}
+
+	l := len(data)
+	if l > 0 {
+		if l == 1 {
+			r.Data = data[0]
+		} else {
+			r.Data = data
+		}
+	}
+
+	return r
+}
+
+func ginStr(c *gin.Context, str string) {
+	c.String(http.StatusOK, str)
+}
+
+func ginJson(c *gin.Context, data interface{}) {
+	c.JSON(http.StatusOK, data)
+}

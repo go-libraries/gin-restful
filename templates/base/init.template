@@ -1,0 +1,107 @@
+package base
+
+import (
+	"fmt"
+	"github.com/Unknwon/goconfig"
+	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
+	"net"
+	"os"
+	"regexp"
+	"strconv"
+	"strings"
+	"sync"
+)
+
+var SuccessResponse = Response{
+	Code: SuccessCode,
+	Msg:  "操作成功",
+	Data: nil,
+}
+
+var Gin *gin.Engine
+var Cfg *goconfig.ConfigFile
+var Log *log.Logger
+var currentPath string
+var identityGenerator *IdWorker
+var controllerPool *sync.Pool
+
+var phoneRegex = regexp.MustCompile(`^((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))\d{8}$`)
+var passwdRegex = regexp.MustCompile(`^[0-9A-Za-z]{6,16}$`)
+var passwdNumRegex = regexp.MustCompile(`^[0-9]{1,20}$`)
+var passwdStrRegex = regexp.MustCompile(`^[a-zA-Z]{1,20}$`)
+var nicknameRegex = regexp.MustCompile(`^.{1,15}$`)
+
+func init() {
+	var err error
+	Cfg = &goconfig.ConfigFile{}
+	currentPath, err = os.Getwd()
+	if err != nil {
+		panic(fmt.Sprintf("无法加载配置文件：%s \n", err))
+	}
+
+	path := currentPath + "/config/config.ini"
+	Cfg, err = goconfig.LoadConfigFile(path)
+	if err != nil {
+		panic(fmt.Sprintf("无法加载配置文件：%s \n", err))
+	}
+
+	//log set
+	Log = NewLogger(currentPath)
+	localIP := GetLocalIP()
+	localIPInt := IPStringToInt(localIP)
+	identityGenerator, err = NewIdWorker(int64((localIPInt % 100) + 1))
+	//log.SetFormatter(&log.TextFormatter{})
+	//log.SetOutput(flogs)
+	//log.SetLevel(log.InfoLevel)
+	Gin = gin.New()
+	Gin.Use(CalTime())
+
+	controllerPool = &sync.Pool{New: func() interface{} {
+		return &Controller{}
+	}}
+}
+
+func GetLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+
+	for _, address := range addrs {
+		// 检查ip地址判断是否回环地址
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+
+	return ""
+}
+
+func IPStringToInt(ipstring string) int {
+	ipsegs := strings.Split(ipstring, ".")
+	var ipint int = 0
+	var pos uint = 24
+	for _, ipseg := range ipsegs {
+		tempint, _ := strconv.Atoi(ipseg)
+		tempint = tempint << pos
+		ipint = ipint | tempint
+		pos -= 8
+	}
+
+	return ipint
+}
+
+func GetController(req interface{}) (c *Controller)  {
+	c = controllerPool.Get().(*Controller)
+	c.Req = req
+	return
+}
+
+func GetControllerWithFunc(req interface{}, f ProcessFunc) (c *Controller)  {
+	c = controllerPool.Get().(*Controller)
+	c.Req = req
+	return
+}

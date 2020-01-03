@@ -1,0 +1,27 @@
+package controllers
+
+import (
+	"github.com/gin-gonic/gin"
+	"{{package}}/base"
+	"{{package}}/services"
+)
+
+func UserIndex(c *gin.Context) {
+	base.RunProcess(&services.UserIdProcess{}, c)
+}
+
+func UserList(c *gin.Context) {
+	base.RunProcess(&services.UserProcess{}, c)
+}
+
+func SaveUser(c *gin.Context) {
+	p := &services.UserSaveProcess{}
+	p.Req = &services.UserSaveRequest{
+		UserAccount: &models.UserAccount{}, Type: "",
+	}
+	p.p.ProcessFun = func(u *base.DefaultProcess) base.IError {
+		u.Data = "hello world"
+		return nil
+	}
+	base.RunProcess(p, c)
+}

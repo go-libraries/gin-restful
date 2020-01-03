@@ -1,0 +1,22 @@
+package models
+
+import (
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	"{{package}}/base"
+)
+
+var Orm *gorm.DB
+
+
+func init() {
+	dsn,err := base.Cfg.GetValue("","MYSQL_DNS")
+	if err != nil {
+		panic("读取数据库配置失败")
+	}
+	db, err := gorm.Open("mysql", dsn)
+	if err != nil {
+		panic("连接数据库失败")
+	}
+	Orm = db
+}

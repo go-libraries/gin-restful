@@ -1,0 +1,125 @@
+package base
+
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+type ProcessFunc func(process *Controller) IError
+type Controller struct {
+	TrackId    string //访问id
+	Ctx        *gin.Context
+	Code       string
+	error      IError
+	Data       interface{} //output  from data raw data parse
+	Req        interface{} //input params
+	ProcessFun ProcessFunc
+}
+
+func RunProcess(process IController, c *gin.Context) {
+	process.setContext(c)
+	defer func() {
+		var err error
+		c.Status(200)
+		c.Header("Content-Type", "application/json; charset=utf-8")
+		defer func() {
+			if err != nil {
+				errStr := fmt.Sprintf(`{"code":"%s","msg":"system error: %s","data":null}`, FailInternal, err.Error())
+				ginStr(c, errStr)
+			}
+		}()
+
+		res := process.getResponse()
+
+		ginJson(c, res)
+	}()
+
+	trackId := getRequestKey(c.Request, "track_id")
+	if trackId == "" {
+		process.SetError(NewErrorStr("need params track_id"))
+		return
+	}
+	process.SetTrackId(trackId)
+
+	err := runProcess(process)
+	if err != nil {
+		process.SetError(err)
+		return
+	}
+}
+
+//run process
+func runProcess(process IController) (err IError) {
+	err = process.Decode()
+	if err != nil {
+		process.SetError(err)
+		return
+	}
+
+	err = process.Process()
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (process *Controller) Decode() IError {
+	process.Data = nil
+
+	switch process.Ctx.Request.Method {
+	case http.MethodPost:
+		fallthrough
+	case http.MethodPut:
+		if process.Ctx.Request.Header.Get("Content-type") == "application/json" {
+			bt, err := process.Ctx.GetRawData()
+			if err == nil {
+				if len(bt) == 0 {
+					bt = []byte("{}")
+				}
+				if err := json.Unmarshal(bt, &process.Req); err != nil {
+					return NewErrorCode(FailJsonParse)
+				}
+			}
+		}
+	default:
+
+	}
+
+	return nil
+}
+
+func (process *Controller) Process() IError {
+	if process.ProcessFun != nil {
+		return process.ProcessFun(process)
+	}
+	return nil
+}
+
+func (process *Controller) getResponse() Response {
+	if process.error != nil {
+		return getDefaultErrorResponse(process.error)
+	} else {
+		return getResponseWithCode(process.Code, process.Data)
+	}
+}
+
+func (process *Controller) SetError(err IError) {
+	Log.Infof("set error in %s,track_id: %s, err: %v\n", process.Ctx.Request.URL.Path, process.TrackId, err)
+	process.error = err
+	return
+}
+
+func (process *Controller) GetTrackId() string {
+	return process.TrackId
+}
+
+func (process *Controller) SetTrackId(id string) {
+	process.TrackId = id
+}
+
+func (process *Controller) setContext(c *gin.Context) {
+	process.Ctx = c
+}

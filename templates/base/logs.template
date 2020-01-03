@@ -1,0 +1,66 @@
+package base
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/lestrrat-go/file-rotatelogs"
+	"github.com/rifflock/lfshook"
+	"github.com/sirupsen/logrus"
+	"log"
+	"time"
+)
+
+func NewLogger(path string) *logrus.Logger {
+	Log := logrus.New()
+
+	for _, level := range logrus.AllLevels {
+		str := level.String()
+		writer, _ := rotatelogs.New(
+			path+"/logs/"+str+"_%Y%m%d_%H.log",
+			rotatelogs.WithLinkName(path),
+			rotatelogs.WithMaxAge(time.Duration(86400)*time.Second),
+			rotatelogs.WithRotationTime(time.Duration(604800)*time.Second),
+		)
+		format := &logrus.TextFormatter{
+			TimestampFormat:        "2006-01-02 15:04:05",
+			FullTimestamp:          true,
+			DisableLevelTruncation: true,
+			DisableSorting:         true,
+			QuoteEmptyFields:       true,
+		}
+		format.FieldMap = logrus.FieldMap{
+			logrus.FieldKeyTime:  "[log_time]",
+			logrus.FieldKeyLevel: "[log_level]",
+			logrus.FieldKeyMsg:   "[msg]",
+		}
+		levelInt, _ := logrus.ParseLevel(str)
+		hook := lfshook.NewHook(
+			lfshook.WriterMap{
+				levelInt: writer,
+			},
+			format,
+		)
+		Log.AddHook(hook)
+	}
+	return Log
+}
+
+func CalTime() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		t := time.Now()
+
+		// 设置 example 变量
+		c.Set("example", "12345")
+
+		// 请求前
+
+		c.Next()
+
+		// 请求后
+		latency := time.Since(t)
+		log.Print(latency)
+
+		// 获取发送的 status
+		status := c.Writer.Status()
+		log.Println(status)
+	}
+}

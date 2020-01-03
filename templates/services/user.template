@@ -1,0 +1,73 @@
+package services
+
+import (
+	"encoding/json"
+	"time"
+	"{{package}}/base"
+	"{{package}}/models"
+)
+
+type UserProcess struct {
+	base.DefaultProcess
+}
+
+type UserIdProcess struct {
+	base.DefaultProcess
+}
+
+type UserSaveRequest struct {
+	*models.UserAccount `json:"account"`
+	Type                string `json:"type"`
+}
+type UserSaveProcess struct {
+	base.DefaultProcess
+	Account *UserSaveRequest
+}
+
+func (u *UserIdProcess) Process() base.IError {
+	info := &models.UserAccount{}
+	info.GetById(u.Ctx.Params.ByName("id"))
+	u.Data = info
+	return nil
+}
+
+func (u *UserSaveProcess) Decode() base.IError {
+	u.Account = &UserSaveRequest{&models.UserAccount{}, ""}
+	if bt, err := u.Ctx.GetRawData(); err == nil {
+		if err := json.Unmarshal(bt, u.Account); err != nil {
+			return base.NewError(err)
+		}
+	} else {
+		return base.NewError(err)
+	}
+
+	return nil
+}
+
+func (u *UserSaveProcess) Process() base.IError {
+	account := u.Account
+
+	if account.UserName == "" || account.Password == "" || account.Type == "" {
+		return base.NewErrorStr("注册失败，缺少账户名密码")
+	}
+
+	if account.Type == "1" || account.Type == "2" {
+		if account.IsRegister() {
+			return base.NewErrorStr("手机已被注册")
+		}
+	}
+
+	account.UserId = int64(base.NextId())
+	now := time.Now().Format("2006-01-02 15:04:05")
+	account.LastLoginTime = now
+	account.FirstLoginTime = account.LastLoginTime
+	account.RegTime = account.LastLoginTime
+	e := account.Create()
+
+	if len(e) > 0 {
+		u.Code = "500"
+		u.SetError(base.NewError(e[0]))
+	}
+
+	return nil
+}
