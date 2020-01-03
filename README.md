@@ -1,4 +1,4 @@
-# 芒果听见gin http项目生成
+# gin http restful项目生成
 
 目前无任何外部库，直接可用
 
