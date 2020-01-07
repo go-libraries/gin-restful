@@ -1,7 +1,9 @@
 # gin http restful项目生成
 
 # 快速入门 
-
+    
+    go version >  1.2(应用go mod)
+    
     git clone https://github.com/go-libraries/gin-restful
     
     cd gin-restful
