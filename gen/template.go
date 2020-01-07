@@ -1,7 +1,6 @@
 package gen
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -101,7 +100,6 @@ func isExist(path string) bool {
 		if os.IsNotExist(err) {
 			return false
 		}
-		fmt.Println(err)
 		return false
 	}
 	return true

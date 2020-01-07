@@ -2,8 +2,7 @@ package main
 
 import (
 	"flag"
-	"project-create/gen"
-	_ "project-create/gen"
+	"gin-restful/gen"
 )
 
 var (
@@ -45,6 +44,8 @@ func main() {
 	build.ProjectName = projectName
 	build.Load("")
 	build.Generator()
+
+	gen.BuildModels(build)
 }
 
 func usage() {
