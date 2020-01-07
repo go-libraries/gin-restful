@@ -13,7 +13,7 @@ func BuildModels(build *Build) {
 
 		//Mysql.SetStyle("bee")
 		Mysql.SetStyle("gorm")
-		Mysql.SetModelPath(build.ProjectPath)
+		Mysql.SetModelPath(build.ProjectPath + "/models")
 		//Mysql.SetIgnoreTables("cate")
 		Mysql.SetPackageName("models")
 		Mysql.Run()
