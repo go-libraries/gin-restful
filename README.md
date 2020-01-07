@@ -1,7 +1,5 @@
 # gin http restful项目生成
 
-目前无任何外部库，直接可用
-
 # 快速入门 
 
     git clone https://github.com/go-libraries/gin-restful
@@ -52,3 +50,96 @@ Usage of createMangoProject:
   -port string
         port
 ```
+
+# 二次开发详解
+
+## 控制器
+
+1. 可以在services中书写新的控制器
+
+```go
+type UserSaveService struct {
+	base.Controller
+	Account *UserSaveRequest
+}
+func (u *UserSaveService) Decode() base.IError {
+    // 解析 输入字段 如下
+	u.Account = &UserSaveRequest{&models.UserAccount{}, ""}
+	if bt, err := u.Ctx.GetRawData(); err == nil {
+		if err := json.Unmarshal(bt, u.Account); err != nil {
+			return base.NewError(err)
+		}
+	} else {
+		return base.NewError(err)
+	}
+
+	return nil
+}
+
+func (u *UserSaveService) Process() base.IError {
+    //todo:执行业务过程
+	return nil
+}
+```
+
+2. 可以在controllers中注入执行方法
+
+```go
+func SaveUser(c *gin.Context) {
+	p := &base.Controller{}
+	p.ServiceFun = func(u *base.DefaultService) base.IError {
+		u.Data = "hello world"
+		return nil
+	}
+	base.RunService(p, c)
+}
+```
+
+## 路由
+
+路由可以开发二次中间件功能
+```go
+package routers
+
+import (
+	"github.com/gin-gonic/gin"
+	"time"
+	"{{package}}/base"
+)
+
+type Route struct {
+	Name        string
+	Method      string
+	Path        string
+	HandlerFunc gin.HandlerFunc
+}
+
+func calTime(fn func(c *gin.Context)) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		start := time.Now()
+		fn(c)
+		base.Log.Printf("Done in %v (%s %s)\n", time.Since(start), c.Request.Method, c.Request.URL.Path)
+	}
+}
+
+func init() {
+
+	//Router.GET("/", func(c *gin.Context) {
+	//	time.Sleep(5 * time.Second)
+	//	c.String(http.StatusOK, "Welcome Gin Server")
+	//})
+
+	for _, route := range getUserRoutes() {
+		handle := calTime(route.HandlerFunc)
+		base.Gin.Handle(route.Method, route.Path, handle)
+	}
+
+	//todo: add other Routes
+}
+```
+
+## 模型
+
+默认使用gorm作为数据驱动，如果初始化--dsn项目不为空，会自动将该db下表生成模型并提供基础方法
+
+外部库详见 [外部库-模型生成器](https://github.com/go-libraries/genModels)

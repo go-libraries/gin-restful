@@ -7,21 +7,21 @@ import (
 )
 
 func UserIndex(c *gin.Context) {
-	base.RunProcess(&services.UserIdProcess{}, c)
+	base.RunService(&services.UserIdService{}, c)
 }
 
 func UserList(c *gin.Context) {
-	base.RunProcess(&services.UserProcess{}, c)
+	base.RunService(&services.UserService{}, c)
 }
 
 func SaveUser(c *gin.Context) {
-	p := &services.UserSaveProcess{}
+	p := &services.UserSaveService{}
 	p.Req = &services.UserSaveRequest{
 		UserAccount: &models.UserAccount{}, Type: "",
 	}
-	p.p.ProcessFun = func(u *base.DefaultProcess) base.IError {
+	p.ServiceFun = func(u *base.DefaultService) base.IError {
 		u.Data = "hello world"
 		return nil
 	}
-	base.RunProcess(p, c)
+	base.RunService(p, c)
 }

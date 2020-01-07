@@ -7,31 +7,31 @@ import (
 	"{{package}}/models"
 )
 
-type UserProcess struct {
-	base.DefaultProcess
+type UserService struct {
+	base.Controller
 }
 
-type UserIdProcess struct {
-	base.DefaultProcess
+type UserIdService struct {
+	base.Controller
 }
 
 type UserSaveRequest struct {
 	*models.UserAccount `json:"account"`
 	Type                string `json:"type"`
 }
-type UserSaveProcess struct {
-	base.DefaultProcess
+type UserSaveService struct {
+	base.Controller
 	Account *UserSaveRequest
 }
 
-func (u *UserIdProcess) Process() base.IError {
+func (u *UserIdService) Process() base.IError {
 	info := &models.UserAccount{}
 	info.GetById(u.Ctx.Params.ByName("id"))
 	u.Data = info
 	return nil
 }
 
-func (u *UserSaveProcess) Decode() base.IError {
+func (u *UserSaveService) Decode() base.IError {
 	u.Account = &UserSaveRequest{&models.UserAccount{}, ""}
 	if bt, err := u.Ctx.GetRawData(); err == nil {
 		if err := json.Unmarshal(bt, u.Account); err != nil {
@@ -44,7 +44,7 @@ func (u *UserSaveProcess) Decode() base.IError {
 	return nil
 }
 
-func (u *UserSaveProcess) Process() base.IError {
+func (u *UserSaveService) Process() base.IError {
 	account := u.Account
 
 	if account.UserName == "" || account.Password == "" || account.Type == "" {
