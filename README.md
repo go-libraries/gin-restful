@@ -143,3 +143,10 @@ func init() {
 默认使用gorm作为数据驱动，如果初始化--dsn项目不为空，会自动将该db下表生成模型并提供基础方法
 
 外部库详见 [外部库-模型生成器](https://github.com/go-libraries/genModels)
+
+
+## 文档
+
+文档使用swagger进行配置，可以一键生成
+
+详见

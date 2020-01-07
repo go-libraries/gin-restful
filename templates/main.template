@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/signal"
 	"{{package}}/base"
-	_ "{{package}}/base"
 	_ "{{package}}/controllers"
 	_ "{{package}}/docs"
 	_ "{{package}}/models"

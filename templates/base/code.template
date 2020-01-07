@@ -20,7 +20,7 @@ const (
 	FailSecret      = "-4"
 	FailParamsError = "-5"
 	FailPostMax     = "-6"
-
+	FailInternal	= "400"
 
 )
 
@@ -31,7 +31,7 @@ var DefaultCodeMapping = CodeMapping{
 	FailThirdLogin:        "第三方登录异常",
 	FailSecret:            "加密参数错误",
 	SuccessCode:           "操作成功",
-//	FailInternal:          "内部错误",
+	FailInternal:          "内部错误",
 	FailParamsError:       "参数不合法",
 	FailPostMax:           "数据超过限制的大小",
 }
