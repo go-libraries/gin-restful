@@ -6,9 +6,7 @@
     
     cd gin-restful
 	
-    go mod download
-    
-    go install createGinProject.go
+    chmod +x ./build.sh
     
     $GOBIN/createGinProject  -package=项目名 -path=项目路径
     
