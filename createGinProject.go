@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"gin-restful/gen"
 )
 
@@ -32,7 +33,8 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	if projectName == "" || projectPath == "" {
+	// dsn username:password@protocol(address)/dbname?param=value
+	if projectName == "" || projectPath == "" || dsn == "" {
 		flag.Usage()
 		return
 	}
@@ -42,9 +44,10 @@ func main() {
 	}
 	build.ProjectPath =  projectPath//"/Users/limars/Desktop/mango/ttt"
 	build.ProjectName = projectName
+	build.Dsn = dsn
 	build.Load("")
 	build.Generator()
-
+	fmt.Println(build.ProjectPath + "/"+build.ProjectName+ "/models")
 	gen.BuildModels(build)
 }
 

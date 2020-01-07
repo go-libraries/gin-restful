@@ -4,14 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"{{package}}/base"
 	"{{package}}/services"
+	"{{package}}/models"
 )
 
 func UserIndex(c *gin.Context) {
-	base.RunService(&services.UserIdService{}, c)
+	base.RunProcess(&services.UserIdService{}, c)
 }
 
 func UserList(c *gin.Context) {
-	base.RunService(&services.UserService{}, c)
+	base.RunProcess(&services.UserService{}, c)
 }
 
 func SaveUser(c *gin.Context) {
@@ -19,9 +20,9 @@ func SaveUser(c *gin.Context) {
 	p.Req = &services.UserSaveRequest{
 		UserAccount: &models.UserAccount{}, Type: "",
 	}
-	p.ServiceFun = func(u *base.DefaultService) base.IError {
+	p.ProcessFun = func(u *base.Controller) base.IError {
 		u.Data = "hello world"
 		return nil
 	}
-	base.RunService(p, c)
+	base.RunProcess(p, c)
 }

@@ -58,7 +58,7 @@ func (userAccount *UserAccount) Create() []error {
 	return Orm.Model(userAccount).Create(userAccount).GetErrors()
 }
 
-func (userAccount *UserAccount) Update(info UserInfo) []error {
+func (userAccount *UserAccount) Update(info UserAccount) []error {
 	return Orm.Model(userAccount).UpdateColumns(info).GetErrors()
 }
 
