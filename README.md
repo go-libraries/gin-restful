@@ -8,7 +8,9 @@
     
     cd gin-restful
 	
-    chmod +x ./build.sh
+    chmod +x ./build.sh  
+    或者 
+    export GO111MODULE=on && export GOMOD={{pwd}}\go.mod && go install createGinProject.go
     
     $GOBIN/createGinProject  -package=项目名 -path=项目路径
     
