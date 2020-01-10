@@ -21,8 +21,8 @@
   日志文件目录
 -models
   模型文件
--processes
-  可以理解为控制器对象
+-services
+  可以理解为控制器对象,主要处理复杂业务封装
 -routers
   路由文件
 go.mod
