@@ -4,6 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"gin-restful/gen"
+	"os"
+	"runtime"
+	"strings"
 )
 
 var (
@@ -25,7 +28,6 @@ func init() {
 }
 
 func main() {
-
 	flag.Parse()
 	if h {
 		flag.Usage()
@@ -42,12 +44,37 @@ func main() {
 	build := &gen.Build{
 		TemplateFiles: make(map[string]string),
 	}
-	build.ProjectPath =  projectPath//"/Users/limars/Desktop/mango/ttt"
+	build.ProjectPath = projectPath //"/Users/limars/Desktop/mango/ttt"
 	build.ProjectName = projectName
 	build.Dsn = dsn
-	build.Load("")
+
+	templatePath := ""
+	goPath := os.Getenv("GOPATH")
+	if goPath != "" {
+		if runtime.GOOS == "windows" {
+			goPaths := strings.Split(goPath, ";")
+			for _,path := range goPaths  {
+				_,err := os.Stat(path+"\\src\\github.com\\go-libraries\\gin-restful")
+				if err == nil {
+					templatePath = path+"\\src\\github.com\\go-libraries\\gin-restful"
+					break
+				}
+			}
+		}else{
+			goPaths := strings.Split(goPath, ":")
+			for _,path := range goPaths  {
+				_,err := os.Stat(path+"/src/github.com/go-libraries/gin-restful")
+				if err == nil {
+					templatePath = path+"/src/github.com/go-libraries/gin-restful"
+					break
+				}
+			}
+		}
+	}
+	fmt.Println(templatePath)
+	build.Load(templatePath)
 	build.Generator()
-	fmt.Println(build.ProjectPath + "/"+build.ProjectName+ "/models")
+
 	gen.BuildModels(build)
 }
 

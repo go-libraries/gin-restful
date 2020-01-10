@@ -33,10 +33,10 @@ func (build *Build) load(path string) {
 	for _, file := range fs {
 		if file.IsDir() {
 
-			build.load(path +"/"+ file.Name() + "/")
+			build.load(path + "/" + file.Name() + "/")
 		} else {
 			path := strings.TrimRight(path, "/")
-			build.makeTemplate(path +"/" + file.Name())
+			build.makeTemplate(path + "/" + file.Name())
 		}
 	}
 }
@@ -64,6 +64,7 @@ func (build *Build) Generator() {
 		content = strings.Replace(content, "{{dsn}}", build.Dsn, -1)
 		content = strings.Replace(content, "{{port}}", build.Port, -1)
 		filename = strings.Replace(filename, ".template", ".go", -1)
+
 		writeFile(filename, content)
 	}
 }
@@ -80,7 +81,7 @@ func writeFile(filename, content string) {
 	}
 
 	defer f.Close()
-	_,err = f.WriteString(content)
+	_, err = f.WriteString(content)
 	if err != nil {
 		panic("can't write file:" + filename)
 	}

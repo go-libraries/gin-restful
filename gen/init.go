@@ -1,5 +1,5 @@
 package gen
 
-func init()  {
-	
+func init() {
+
 }
