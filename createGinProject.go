@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"gin-restful/gen"
+	"github.com/go-libraries/gin-restful/gen"
 	"os"
 	"runtime"
 	"strings"
