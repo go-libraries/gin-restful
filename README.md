@@ -2,13 +2,11 @@
 
 # 快速入门 
     
-    go version >  1.2(应用go mod)
-    
-    go get -u github.com/go-libraries/gin-restful
+    go get  github.com/go-libraries/gin-restful
 
     //export GO111MODULE=on && export GOMOD={{pwd}}\go.mod && go install createGinProject.go
     
-    $GOBIN/createGinProject  -package=项目名 -path=项目路径 -dsn=""username:password@tcp(host:port)/database"
+    $GOBIN/gin-restful  -package=项目名(包名) -path=项目路径 -dsn=""username:password@tcp(host:port)/database"
     
 # 生成项目基本结构
 
