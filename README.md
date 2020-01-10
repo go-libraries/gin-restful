@@ -8,7 +8,7 @@
 
     //export GO111MODULE=on && export GOMOD={{pwd}}\go.mod && go install createGinProject.go
     
-    $GOBIN/createGinProject  -package=项目名 -path=项目路径
+    $GOBIN/createGinProject  -package=项目名 -path=项目路径 -dsn=""username:password@tcp(host:port)/database"
     
 # 生成项目基本结构
 
