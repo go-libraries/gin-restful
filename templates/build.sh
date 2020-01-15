@@ -6,6 +6,8 @@ export GOMOD=${current_path}"/go.mod"
 
 rm go.sum
 
-swag init
+go get github.com/swaggo/swag/cmd/swag
+# ${GOPATH}/bin/swag init
 
+go mod vendor
 go run main.go

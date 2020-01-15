@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"{{package}}/base"
-	"{{package}}/services"
+	base "github.com/grestful/core"
 	"{{package}}/models"
+	"{{package}}/services"
 )
 
 func UserIndex(c *gin.Context) {
@@ -12,13 +12,16 @@ func UserIndex(c *gin.Context) {
 }
 
 func UserList(c *gin.Context) {
-	base.RunProcess(&services.UserService{}, c)
+	p:=&services.UserIdService{}
+	print(p)
+	base.RunProcess(p, c)
+	//base.RunProcess(&services.UserService{}, c)
 }
 
 func SaveUser(c *gin.Context) {
 	p := &services.UserSaveService{}
 	p.Req = &services.UserSaveRequest{
-		UserAccount: &models.UserAccount{}, Type: "",
+		DefaultModel: &models.DefaultModel{}, Type: "",
 	}
 	p.ProcessFun = func(u *base.Controller) base.IError {
 		u.Data = "hello world"

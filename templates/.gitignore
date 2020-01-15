@@ -32,3 +32,6 @@ Thumbs.db
 /bin/
 /log/
 /pkg/
+/vendor/
+/docs
+go.sum

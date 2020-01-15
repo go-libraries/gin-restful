@@ -75,7 +75,7 @@ func main() {
 	build.Load(templatePath)
 	build.Generator()
 
-	gen.BuildModels(build)
+	//gen.BuildModels(build)
 }
 
 func usage() {
