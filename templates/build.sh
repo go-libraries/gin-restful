@@ -8,6 +8,6 @@ rm go.sum
 
 go get github.com/swaggo/swag/cmd/swag
 # ${GOPATH}/bin/swag init
-
+go mod init {{package}}
 go mod vendor
 go run main.go
