@@ -11,18 +11,16 @@
 # 生成项目基本结构
 
 ```go
--base
-  基础文件
 -config
   config.ini
--handlers
+-controllers
   http处理回调
 -logs
   日志文件目录
 -models
   模型文件
 -services
-  可以理解为控制器对象,主要处理复杂业务封装
+  主要对控制器的复杂业务二次封装
 -routers
   路由文件
 go.mod
