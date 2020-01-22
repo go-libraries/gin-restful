@@ -15,7 +15,12 @@ func BuildModels(build *Build) {
 		Mysql.SetStyle("gorm")
 
 		genModels.GormInit = ``
-		genModels.GormTpl = ``
+		genModels.GormTpl = `
+
+		func ({{entry}} *{{object}}) GetKeyName() string{
+			return {{entry}}.GetKey()
+		}
+`
 		//path := build.ProjectPath + "/" + build.ProjectName + "/models"
 		_, e := os.Stat(path)
 		if e != nil {
