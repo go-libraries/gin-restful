@@ -6,7 +6,6 @@ import (
 	"github.com/grestful/utils"
 
 	_ "{{package}}/controllers"
-	//_ "{{package}}/docs"
 	_ "{{package}}/routers"
 
 	"log"
@@ -24,8 +23,8 @@ func main() {
 		port = "8081"
 	}
 
-
 	env, _ := core.Config.GetValue("", "ENV")
+	fmt.Println("now env is:" + env)
 	go func() {
 		// 服务连接
 		if err := core.Gin.Run(":" + port); err != nil && err != http.ErrServerClosed {
