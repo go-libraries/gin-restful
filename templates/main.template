@@ -5,9 +5,6 @@ import (
 	ginRest "github.com/grestful/core"
 	"github.com/grestful/utils"
 
-
-	//swaggerFiles "github.com/swaggo/files"
-	//"github.com/swaggo/gin-swagger"
 	_ "{{package}}/controllers"
 	//_ "{{package}}/docs"
 	_ "{{package}}/routers"
@@ -20,7 +17,6 @@ import (
 
 func main() {
 	path := utils.GetCurrentPath() + "/config/config.ini"
-	fmt.Println(path)
 	ginRest.InitConfig(path)
 	core := ginRest.GetCore()
 	port, _ := core.Config.GetValue("", "PORT")
@@ -30,11 +26,6 @@ func main() {
 
 
 	env, _ := core.Config.GetValue("", "ENV")
-	fmt.Println(env)
-	//if env == "dev" {
-	//	url := ginSwagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", port)) // The url pointing to API definition
-	//	core.Handle("GET","/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
-	//}
 	go func() {
 		// 服务连接
 		if err := core.Gin.Run(":" + port); err != nil && err != http.ErrServerClosed {
