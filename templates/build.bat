@@ -1,6 +1,6 @@
 @echo off
 set nowDir=%~dp0
-set GO111MODULE=on
+set GO111MODULE=auto
 set GOPROXY=https://goproxy.cn,direct
 go env -w GO111MODULE=on
 go env -w GOMOD=%nowDir%"/go.mod"

@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/go-libraries/gin-restful/gen"
 	"os"
 	"runtime"
@@ -71,11 +70,11 @@ func main() {
 			}
 		}
 	}
-	fmt.Println(templatePath)
+
 	build.Load(templatePath)
 	build.Generator()
 
-	//gen.BuildModels(build)
+	gen.BuildModels(build)
 }
 
 func usage() {

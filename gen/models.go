@@ -1,22 +1,33 @@
 package gen
 
+import (
+	"github.com/go-libraries/genModels"
+	"os"
+)
+
 func BuildModels(build *Build) {
 	dsn := build.Dsn
 
 	if dsn != "" {
-		//Mysql := genModels.GetMysqlToGo()
-		//Mysql.Driver.SetDsn(dsn)
-		//
-		////Mysql.SetStyle("bee")
-		//Mysql.SetStyle("gorm")
+		path := build.ProjectPath + "/" + build.ProjectName + "/models"
+		Mysql := genModels.GetMysqlToGo()
+		Mysql.Driver.SetDsn(dsn)
+		Mysql.SetStyle("gorm")
+
+		genModels.GormInit = ``
+		genModels.GormTpl = `
+
+		func ({{entry}} *{{object}}) GetKeyName() string{
+			return {{entry}}.GetKey()
+		}
+`
 		//path := build.ProjectPath + "/" + build.ProjectName + "/models"
-		//_, e := os.Stat(path)
-		//if e != nil {
-		//	os.MkdirAll(path, 0666)
-		//}
-		//Mysql.SetModelPath(build.ProjectPath + "/" + build.ProjectName + "/models")
-		////Mysql.SetIgnoreTables("cate")
-		//Mysql.SetPackageName("models")
-		//Mysql.Run()
+		_, e := os.Stat(path)
+		if e != nil {
+			os.MkdirAll(path, 0666)
+		}
+		Mysql.SetModelPath(path)
+		Mysql.SetPackageName("models")
+		Mysql.Run()
 	}
 }
