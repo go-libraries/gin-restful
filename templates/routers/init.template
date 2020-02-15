@@ -38,7 +38,7 @@ func calTime(fn func(c *gin.Context)) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		start := time.Now()
 		fn(c)
-		core.GetLog().Printf("Done in %v (%s %s)\n", time.Since(start), c.Request.Method, c.Request.URL.Path)
+		core.GetLog().Info("Done in %v (%s %s)\n", time.Since(start), c.Request.Method, c.Request.URL.Path)
 	}
 }
 
